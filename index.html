@@ -1,192 +1,686 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta author="Luc Thien Phong">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe</title>
+    <title>Tech Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- PHẦN CSS --- */
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-color: #f0f2f5;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .wallet {
+            font-size: 1.2em;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        #balance {
+            font-weight: 700;
+        }
+
+        main h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--card-background);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card h3 {
+            font-size: 1.4em;
+            margin: 15px 0;
+        }
+
+        .product-card .price {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .buy-btn {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .buy-btn:hover {
+            opacity: 0.9;
+        }
+
+        .redeem-section {
+            text-align: center;
+            margin-top: 50px;
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+
+        .redeem-section h3 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        #code-input {
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 250px;
+            margin-right: 10px;
+        }
+
+        #redeem-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #redeem-btn:hover {
+            background-color: #218838;
+        }
+
+        #notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1em;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        #notification.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        
+        #notification.hidden {
+            opacity: 0;
+            transform: translate(-50%, 50px);
+        }
+
+        #notification.success {
+            background-color: #28a745;
+        }
+
+        #notification.error {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
-<style>
-    body {
-        overflow: hidden;
-        margin: 0;
-    }
-
-    #word img {
-        width: 50px;
-        position: absolute;
-        margin: 10;
-    }
-</style>
-
 <body>
-    <div id="word">
-        <a href="https://trongnghia1759.github.io/">
-            <img width="300" src="https://i.postimg.cc/C149qY3k/11zon-cropped.png" title="ltp" />
-        </a>
+    <div class="container">
+        <header>
+            <h1>DevBase</h1>
+            <div class="wallet">
+                <span>Số Dư:</span>
+                <span id="balance">0</span>$
+            </div>
+        </header>
+
+        <main>
+            <h2>Sản Phẩm</h2>
+            <div class="product-grid">
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/folder/fqfqmrwt7bj1t/Tỏ+Tình+#1">
+<img src="totinhv1.png" alt="MS#175911">
+<h3>Tỏ Tình #1</h3>
+<p>Loại: HTML<br>Mã: MS#175911</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/folder/lkvzgpenbvlrg/Tạo+QR">
+<img src="taoqrv1.png" alt="MS#175910">
+<h3>Tạo Mã QR Từ Link</h3>
+<p>Loại: HTML<br>Mã: MS#175910</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/folder/t1xg0ag0ob8tk/Galaxy+Hành+Tinh+V2">
+<img src="galaxyv2.png" alt="MS#175909">
+<h3>Galaxy V2</h3>
+<p>Loại: HTML<br>Mã: MS#175909</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="2"data-link="https://www.mediafire.com/folder/eo5002wshac1l/Check-Scammer">
+<img src="checkscam.png" alt="MS#175908">
+<h3>Web Bio DTN</h3>
+<p>Loại: HTML<br>Mã: MS#175908</p>
+<p class="price">Giá: 2$</p>
+<button class="buy-btn">Mua ngay</button></div>
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="1"data-link="https://www.mediafire.com/folder/9n7x18mkpyufc/Web+Cửa+Hàng+#1">
+<img src="ban1.png" alt="MS#175907">
+<h3>Web Bán Hàng #1</h3>
+<p>Loại: HTML<br>Mã: MS#175907</p>
+<p class="price">Giá: 1$</p>
+<button class="buy-btn">Mua ngay</button></div>
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="1"data-link="https://www.mediafire.com/folder/f764r7t2mvw3z/Bốc+Lời+Chúc,+Trung+Thu">
+<img src="denlong.png" alt="MS#175906">
+<h3>Đèn Lồng Lời Chúc</h3>
+<p>Loại: HTML<br>Mã: MS#175906</p>
+<p class="price">Giá: 1$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/file/h4wwc5nmi51d4c7/thienhatim.html/file">
+<img src="hanhtinhtim.png" alt="MS#175905">
+<h3>Galaxy V1</h3>
+<p>Loại: HTML<br>Mã: MS#175905</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="1"data-link="https://www.mediafire.com/file/xhfh48z98u68vtv/%25F0%259F%258C%259ALocketV17_TNghia1759.conf/file">
+<img src="locketgoldv17.png" alt="MS#175904">
+<h3>locketgoldv17.png</h3>
+<p>Loại: Config Shadowrocket<br>Mã: MS#175904</p>
+<p class="price">Giá: 1$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/file/osyo4mdimnjcdie/Minecraft-1.21.92-TNghia1759.apk/file">
+<img src="minecraft.png" alt="MS#175903">
+<h3>MINECRAFT 1.21.92</h3>
+<p>Loại: APK<br>Mã: MS#175903</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               <div
+class="product-card"data-price="0"data-link="https://www.mediafire.com/folder/ir2lz38kg9zg3/Web+SN+V1+-+VanhLoveIT">
+<img src="snv1.png" alt="MS#175902">
+<h3>Happy Birthday-VanhLoveIT</h3>
+<p>Loại: HTML<br>Mã: MS#175902</p>
+<p class="price">Giá: 0$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+<div
+class="product-card"data-price="10"data-link="https://www.mediafire.com/folder/ga0wd5ajiyzhp/MMO-DTN">
+<img src="mmo-dtn.png" alt="MS#175901">
+<h3>Web Bio DTN</h3>
+<p>Loại: HTML<br>Mã: MS#175901</p>
+<p class="price">Giá: 10$</p>
+<button class="buy-btn">Mua ngay</button></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              
+
+
+
+
+
+
+
+            <div class="redeem-section">
+                <h3>Nạp tiền</h3>
+                <input type="text" id="code-input" placeholder="Nhập mã tại đây">
+                <br><br><button id="redeem-btn">Nạp tiền</button>
+            </div>
+        </main>
+
+        <div id="notification" class="hidden"></div>
     </div>
 
-    <script type="module">
-        import * as THREE from "https://cdn.skypack.dev/three@0.136.0";
-        import { OrbitControls } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/controls/OrbitControls";
+    <script>
+        // --- PHẦN JAVASCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const balanceElement = document.getElementById('balance');
+            const productCards = document.querySelectorAll('.product-card');
+            const redeemBtn = document.getElementById('redeem-btn');
+            const codeInput = document.getElementById('code-input');
+            const notification = document.getElementById('notification');
 
-        var defined = 'QXV0aG9yOiBMdWMg';
-        var datacenter = ['aHR0cHM6L', 'y93d3cuZmF', 'jZWJvb2suY29t'];
-        let scene = new THREE.Scene();
-        scene.background = new THREE.Color('#160016');
-        let camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 1, 1000);
-        camera.position.set(0, 4, 21);
-        let renderer = new THREE.WebGLRenderer();
-        renderer.setSize(innerWidth, innerHeight);
-        document.body.appendChild(renderer.domElement);
-        window.addEventListener("resize", event => {
-            camera.aspect = innerWidth / innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(innerWidth, innerHeight);
-        })
-        datacenter.push('L3Byb2ZpbGUu');
-        let controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.enablePan = false;
-        datacenter.push('cGhwP2lkPTEw');
-        let gu = {
-            time: { value: 0 }
-        }
-        defined = defined.concat('VGhpZW4gUGhvbmc=');
-        let sizes = [];
-        let shift = [];
-        let pushShift = () => {
-            shift.push(
-                Math.random() * Math.PI,
-                Math.random() * Math.PI * 2,
-                (Math.random() * 0.9 + 0.1) * Math.PI * 0.1,
-                Math.random() * 0.9 + 0.1
-            );
-        }
-        datacenter.push('MDA0NTQwNj');
-        var context = atob(defined);
-        let pts = new Array(50000).fill().map(p => {
-            sizes.push(Math.random() * 1.5 + 0.5);
-            pushShift();
-            return new THREE.Vector3().randomDirection().multiplyScalar(Math.random() * 0.5 + 9.5);
-        })
-        for (let i = 0; i < 100000; i++) {
-            let r = 10, R = 40;
-            let rand = Math.pow(Math.random(), 1.5);
-            let radius = Math.sqrt(R * R * rand + (1 - rand) * r * r);
-            pts.push(new THREE.Vector3().setFromCylindricalCoords(radius, Math.random() * 2 * Math.PI, (Math.random() - 0.5) * 2));
-            sizes.push(Math.random() * 1.5 + 0.5);
-            pushShift();
-        }
-        console.log(context);
-        datacenter.push('I2MTQ5MQ' + '==');
-        let g = new THREE.BufferGeometry().setFromPoints(pts);
-        g.setAttribute("sizes", new THREE.Float32BufferAttribute(sizes, 1));
-        g.setAttribute("shift", new THREE.Float32BufferAttribute(shift, 4));
-        let m = new THREE.PointsMaterial({
-            size: 0.125,
-            transparent: true,
-            depthTest: false,
-            blending: THREE.AdditiveBlending,
-            onBeforeCompile: shader => {
-                shader.uniforms.time = gu.time;
-                shader.vertexShader = `
-                    uniform float time;
-                    attribute float sizes;
-                    attribute vec4 shift;
-                    varying vec3 vColor;
-                    ${shader.vertexShader}
-                `.replace(
-                    `gl_PointSize = size;`,
-                    `gl_PointSize = size * sizes;`
-                ).replace(
-                    `#include <color_vertex>`,
-                    `#include <color_vertex>
-                    float d = length(abs(position) / vec3(40., 10., 40));
-                    d = clamp(d, 0., 1.);
-                    vColor = mix(vec3(255,105,180), vec3(0,191,255), d) / 255.;
-                `).replace(
-                        `#include <begin_vertex>`,
-                        `#include <begin_vertex>
-                    float t = time;
-                    float moveT = mod(shift.x + shift.z * t, PI2);
-                    float moveS = mod(shift.y + shift.z * t, PI2);
-                    transformed += vec3(cos(moveS) * sin(moveT), cos(moveT), sin(moveS) * sin(moveT)) * shift.a;
-                `);
-                shader.fragmentShader = `
-                varying vec3 vColor;
-                ${shader.fragmentShader}
-                `.replace(
-                    `#include <clipping_planes_fragment>`,
-                    `#include <clipping_planes_fragment>
-                    float d = length(gl_PointCoord.xy - 0.5);
-                    if (d > 0.5) discard;
-                `).replace(
-                        `vec4 diffuseColor = vec4( diffuse, opacity );`,
-                        `vec4 diffuseColor = vec4( vColor, smoothstep(0.5, 0.1, d) );`
-                    );
+            let currentBalance = 0;
+
+            // Các mã code hợp lệ và số tiền tương ứng
+            const validCodes = {
+                "ADMIN1511": 1000000,
+                "1759": 1,
+                "2106": 3,
+                "0": 0
+            };
+
+            // Hàm cập nhật hiển thị số dư
+            function updateBalanceDisplay() {
+                balanceElement.textContent = currentBalance.toLocaleString('vi-VN');
             }
-        });
-        let p = new THREE.Points(g, m);
-        p.rotation.order = "ZYX";
-        p.rotation.z = 0.2;
-        scene.add(p);
 
-        // Add "Universe" text far above the planet and larger
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 72px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        
-        
-        
-        
-        
-      ctx.textAlign = 'center'; // căn giữa
-ctx.textBaseline = 'middle';
-ctx.font = '30px Arial';
-ctx.fillStyle = 'white'; // hoặc màu bạn muốn
+            // Hàm lưu số dư vào localStorage
+            function saveBalance() {
+                localStorage.setItem('userBalance', currentBalance);
+            }
 
-// Dòng 1
-ctx.fillText('Đàm Trọng Nghĩa', canvas.width / 2, canvas.height / 2);
+            // Hàm tải số dư từ localStorage khi trang được load
+            function loadBalance() {
+                const savedBalance = localStorage.getItem('userBalance');
+                if (savedBalance !== null) {
+                    currentBalance = parseInt(savedBalance, 10);
+                }
+                updateBalanceDisplay();
+            }
+            
+            // Hàm hiển thị thông báo
+            function showNotification(message, type) {
+                notification.textContent = message;
+                notification.className = 'notification'; // Xóa các lớp cũ
+                notification.classList.add(type, 'show');
 
-// Dòng 2 (cách dòng 1 khoảng 25px)
-ctx.fillText('17/05/2009', canvas.width / 2, canvas.height / 2 + 30);
+                // Tự động ẩn thông báo sau 3 giây
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.classList.add('hidden');
+                }, 3000);
+            }
 
-// Dòng 3 (cách dòng 1 khoảng 25px)
-ctx.fillText('Dịch Vụ MXH, Thuê App Prem, Tạo Website', canvas.width / 2, canvas.height / 2 + 60);
-// Dòng 3 (cách dòng 1 khoảng 25px)
-ctx.fillText('Click Liên Hệ Ở Góc Trái Màn Hình', canvas.width / 2, canvas.height / 2 + 90);
-       
-       
-       
-       
-       
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
-        const sprite = new THREE.Sprite(material);
-        sprite.position.set(0, 18, 0); // xa hành tinh hơn
-        sprite.scale.set(15, 10, 5);    // to hơn
-        scene.add(sprite);
+            // Xử lý sự kiện khi nhấn nút Mua
+            productCards.forEach(card => {
+                const buyBtn = card.querySelector('.buy-btn');
+                const price = parseInt(card.getAttribute('data-price'), 10);
+                const link = card.getAttribute('data-link');
 
-        const data = atob(datacenter.join(''));
-        let clock = new THREE.Clock();
-        console.log(data);
-        renderer.setAnimationLoop(() => {
-            controls.update();
-            let t = clock.getElapsedTime() * 0.5;
-            gu.time.value = t * Math.PI;
-            p.rotation.y = t * 0.05;
-            renderer.render(scene, camera);
+                buyBtn.addEventListener('click', () => {
+                    if (currentBalance >= price) {
+                        // Đủ tiền
+                        currentBalance -= price;
+                        saveBalance();
+                        updateBalanceDisplay();
+                        showNotification('Thanh toán thành công! Đang chuyển hướng...', 'success');
+                        
+                        // Chuyển hướng đến link mua hàng sau 2 giây
+                        setTimeout(() => {
+                            window.location.href = link;
+                        }, 2000);
+
+                    } else {
+                        // Không đủ tiền
+                        showNotification('Số dư của bạn không đủ để thực hiện giao dịch này!', 'error');
+                    }
+                });
+            });
+
+            // Xử lý sự kiện khi nhấn nút Nạp tiền
+            redeemBtn.addEventListener('click', () => {
+                const code = codeInput.value.trim().toUpperCase();
+                
+                if (validCodes[code]) {
+                    const amount = validCodes[code];
+                    currentBalance += amount;
+                    saveBalance();
+                    updateBalanceDisplay();
+                    showNotification(`Nạp thành công ${amount.toLocaleString('vi-VN')} VND!`, 'success');
+                    codeInput.value = ''; // Xóa nội dung trong ô nhập
+                    // Để tránh nạp lại, có thể xóa mã đã dùng (tùy chọn)
+                    // delete validCodes[code]; 
+                } else {
+                    showNotification('Mã code không hợp lệ hoặc đã được sử dụng.', 'error');
+                }
+            });
+
+            // Tải số dư khi trang được mở lần đầu
+            loadBalance();
         });
     </script>
 </body>
-
 </html>
